@@ -25,8 +25,13 @@ WORKDIR /var/www
 # Copy existing application directory contents
 COPY . /var/www
 
-# Copy existing application directory permissions
-COPY --chown=www-data:www-data . /var/www
+# Install PHP dependencies
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Setup permissions for Laravel
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/storage \
+    && chmod -R 775 /var/www/bootstrap/cache
 
 # Change current user to www
 USER www-data
